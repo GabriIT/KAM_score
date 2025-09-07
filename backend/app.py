@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel
-from pydantic_settings import BaseSettings
+
 from sqlalchemy import create_engine, Column, Integer, String, Float, Date, ForeignKey, select, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
 from datetime import date
@@ -11,11 +11,20 @@ from typing import List, Dict, Tuple
 from io import StringIO
 import csv, random, os
 
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+
 class Settings(BaseSettings):
-    DB_URL: str = os.getenv("DATABASE_URL", "sqlite:///./kam.db")
+    # Prefer DATABASE_URL (Dokku Postgres/link), else DB_URL (your SQLite), else default
+    DB_URL: str = os.getenv("DATABASE_URL", os.getenv("DB_URL", "sqlite:///./kam.db"))
     APP_ENV: str = "local"
 
-settings = Settings(_env_file=".env", _env_file_encoding="utf-8")
+    # <<< IMPORTANT: do not break on unrelated Dokku env vars >>>
+    model_config = SettingsConfigDict(extra="ignore", env_prefix="", case_sensitive=False)
+
+settings = Settings(_env_file=".env", _env_file_encoding="utf-8")  # .env optional
+print(f"Using DB: {settings.DB_URL} (APP_ENV={settings.APP_ENV})")
 
 class Base(DeclarativeBase): pass
 
