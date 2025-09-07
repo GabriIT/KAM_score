@@ -1,0 +1,15 @@
+{
+  "healthchecks": {
+    "web": [
+      {
+        "type": "http",
+        "name": "index",
+        "path": "/",
+        "http_codes": [200],
+        "attempts": 5,
+        "timeout": 5,
+        "initial_delay": 5
+      }
+    ]
+  }
+}
