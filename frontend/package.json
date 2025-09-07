@@ -13,7 +13,8 @@
     "axios": "^1.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "recharts": "^2.12.7"
+    "recharts": "^2.12.7",
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.0",
