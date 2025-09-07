@@ -25,8 +25,13 @@ class Settings(BaseSettings):
     APP_ENV: str = "local"
     model_config = SettingsConfigDict(extra="ignore", env_prefix="", case_sensitive=False)
 
-# Prefer DATABASE_URL (Dokku/Heroku convention), then DB_URL, else fallback
+# Prefer DATABASE_URL (Dokku Postgres), else DB_URL, else SQLite
 resolved_db_url = os.getenv("DATABASE_URL") or os.getenv("DB_URL") or "sqlite:///./kam.db"
+
+# SQLAlchemy 2.x requires 'postgresql://' not 'postgres://'
+if resolved_db_url.startswith("postgres://"):
+    resolved_db_url = resolved_db_url.replace("postgres://", "postgresql://", 1)
+
 settings = Settings(DB_URL=resolved_db_url, _env_file=".env", _env_file_encoding="utf-8")
 
 print(f"Using DB: {settings.DB_URL} (APP_ENV={settings.APP_ENV})")
